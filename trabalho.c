@@ -164,11 +164,29 @@ void printa_tabuleiro(){
         }
     }
     else{
-        for (int i = 0; i <n ; ++i) {
-            for (int j = 0; j < m; ++j) {
-                printf("%s%d%s ", cor_ansi[tabuleiro[ i*m + j]], tabuleiro[ i*m + j],cor_ansi[0]);
+        if( k >9){
+            for (int i = 0; i <n ; ++i) {
+                for (int j = 0; j < m; ++j) {
+                    if (tabuleiro[ i*m + j] >9)
+                    {
+                        printf("%s%d%s ", cor_ansi[tabuleiro[ i*m + j]], tabuleiro[ i*m + j],cor_ansi[0]);
+                    }
+                    else{
+                        printf("%s0%d%s ", cor_ansi[tabuleiro[ i*m + j]], tabuleiro[ i*m + j],cor_ansi[0]);
+                    }
+                    
+                }
+                printf("\n");
             }
-            printf("\n");
+        }
+        else{
+            for (int i = 0; i <n ; ++i) {
+                for (int j = 0; j < m; ++j) {
+                    printf("%s%d%s ", cor_ansi[tabuleiro[ i*m + j]], tabuleiro[ i*m + j],cor_ansi[0]);
+                }
+                printf("\n");
+            }
+
         }
 
     }
@@ -306,7 +324,7 @@ void resolverdor(grafo g){
         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
             vertice vt= conteudo(n);
             vt-> visitado = 0;
-            //total_cores[vt->cor -1 ] ++;
+            total_cores[vt->cor -1 ] ++;
 
             // se ja esta no bloco pinta com a nova cor
             if (vt -> flag == BLOCO_ATUAL){
@@ -328,8 +346,9 @@ void resolverdor(grafo g){
         for (int i = 0; i < k; ++i)
         {
             
-            cores[i] = 0;
-            
+            printf("%d tem : %d nodos\n",i+1,total_cores[i] );
+            cores[i] = 0;           
+            total_cores[i] = 0;
 
             
             //  if(total_cores[i] == n*m){
@@ -346,7 +365,7 @@ void resolverdor(grafo g){
 
         //scanf("%s",aux);
 
-        sleep(1);
+        //sleep(1);
 
         passos++;
     }
