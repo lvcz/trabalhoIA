@@ -291,30 +291,39 @@ void resolverdor(grafo g){
     while(1)
     { 
             
-        
+        printa_tabuleiro();
         sentinela(v);
 
         maior_vizinho = k-1;
+        for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+            total_cores[vt->cor -1 ] ++;
+        }
         
         for (int i = 0; i < k; ++i)
         {
-            if(cores[i] > cores[maior_vizinho]) maior_vizinho = i;
+            if(cores[i] >= cores[maior_vizinho]){
+                    maior_vizinho = i;
+            }
             printf("%d tem : %d nodos\n",i+1,cores[i] );
             
             if(cores[i] == 0) sem_vizinhos++; 
             
+        } 
+         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+            total_cores[vt->cor -1 ] ++;
         }
-
+    
 
         for (int i = 0; i < k && i !=maior_vizinho; ++i)
         {
             //procura por blocos de vizinhos que tenham tamanhos iguais e escolhe um (random)
             if(cores[maior_vizinho] == cores[i]){
-                //TODO
+                if(total_cores[maior_vizinho] == cores[maior_vizinho])
             }
         }
 
         if (sem_vizinhos == k) break;
+       
         
         
         nova_cor = maior_vizinho +1 ;
@@ -324,7 +333,7 @@ void resolverdor(grafo g){
         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
             vertice vt= conteudo(n);
             vt-> visitado = 0;
-            total_cores[vt->cor -1 ] ++;
+            //total_cores[vt->cor -1 ] ++;
 
             // se ja esta no bloco pinta com a nova cor
             if (vt -> flag == BLOCO_ATUAL){
@@ -342,11 +351,11 @@ void resolverdor(grafo g){
             }
 
         }
-         printa_tabuleiro();
+         
         for (int i = 0; i < k; ++i)
         {
             
-            printf("%d tem : %d nodos\n",i+1,total_cores[i] );
+            printf(" total %d tem : %d nodos\n",i+1,total_cores[i] );
             cores[i] = 0;           
             total_cores[i] = 0;
 
@@ -363,7 +372,7 @@ void resolverdor(grafo g){
         sem_vizinhos=0;
        
 
-        //scanf("%s",aux);
+        scanf("%s",aux);
 
         //sleep(1);
 
@@ -459,7 +468,7 @@ int main(int argc, char **argv){
     get_tabuleiro(fp);
 
     
-    printa_tabuleiro();
+    //printa_tabuleiro();
     g = set_grafo();
     //printa_grafo(g);
 
