@@ -45,7 +45,7 @@ int *cores;
 int *total_cores;
 int *bloco_externo;
 grafo g;
-int print_cor = 1;
+int print_cor = 0;
 
 
 char* cor_ansi[] = { "\x1b[0m",
@@ -56,8 +56,8 @@ char* cor_ansi[] = { "\x1b[0m",
                "\x1b[35;1m", "\x1b[36;1m", "\x1b[37;1m" };
 //Escopo
 //------------------------------------------------------------------------------
-void get_parametros(FILE *fp);
-void get_tabuleiro(FILE *fp);
+void get_parametros();
+void get_tabuleiro();
 grafo set_grafo();
 void printa_grafo(grafo g);
 void resolverdor(grafo g);
@@ -71,14 +71,14 @@ void printa_tabuleiro();
 
 //Funcoes para ler arquivo de entrada
 //------------------------------------------------------------------------------
-void get_parametros(FILE *fp){
+void get_parametros(){
 	char *line;
     size_t len = 0;
 	char *token;
 	char *search = " ";
 	int i = 0;
 
-	getline(&line, &len, fp);
+	getline(&line, &len, stdin);
 	token = strtok(line, search);
 
 	while ( token != NULL){
@@ -94,7 +94,7 @@ void get_parametros(FILE *fp){
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void get_tabuleiro(FILE *fp){
+void get_tabuleiro(){
     char *line;
     size_t len = 0;
     ssize_t read;
@@ -103,7 +103,7 @@ void get_tabuleiro(FILE *fp){
     char *search = " ";
     int posicao = 0;
 
-    while ((read = getline(&line, &len, fp)) != -1){
+    while ((read = getline(&line, &len, stdin)) != -1){
         if (strcmp(line,"\n") || strcmp(line," \n")){
            
             token = strtok(line, search);
@@ -255,10 +255,8 @@ void printa_grafo(grafo g){
         vertice v = conteudo(n);
         printf(" %d , %d  vizinhos: \n", v->posicao, v->cor);
         for( no m = primeiro_no( v->arestas ); m; m = proximo_no(m)){
-            aresta a = conteudo(m);
-            //printf(" %d \n",a->valor);          
-        }
-       // printf("fim do vertice\n \n");
+            aresta a = conteudo(m);            
+        }       
     }
 }
 
@@ -280,7 +278,9 @@ void resolverdor(grafo g){
     {
        cores[i]=0;
     }
-    char * aux;
+    lista lista_movimentos= constroi_lista();
+    int aux;
+    char * tst;
     int maior_vizinho,//maior bloco procurado
         nova_cor, //cor que sera trocada
         passos = 0, //contador de passos
@@ -288,46 +288,45 @@ void resolverdor(grafo g){
     no primeiro = primeiro_no(g->vertices);
     vertice v = conteudo(primeiro);
     v->flag = 1;
+     //printa_tabuleiro();
     while(1)
     { 
             
-        printa_tabuleiro();
+       
         sentinela(v);
 
         maior_vizinho = k-1;
         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
+            vertice vt= conteudo(n);
             total_cores[vt->cor -1 ] ++;
         }
         
         for (int i = 0; i < k; ++i)
         {
             if(cores[i] >= cores[maior_vizinho]){
+                if (cores[i] == total_cores[i]){
                     maior_vizinho = i;
+
+                }
+                
+
+                if (cores[i] > cores[maior_vizinho]){
+                    maior_vizinho = i;   
+                }
             }
-            printf("%d tem : %d nodos\n",i+1,cores[i] );
+            //printf("%d tem : %d nodos\n",i+1,cores[i] );
             
             if(cores[i] == 0) sem_vizinhos++; 
             
-        } 
-         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
-            total_cores[vt->cor -1 ] ++;
-        }
-    
-
-        for (int i = 0; i < k && i !=maior_vizinho; ++i)
-        {
-            //procura por blocos de vizinhos que tenham tamanhos iguais e escolhe um (random)
-            if(cores[maior_vizinho] == cores[i]){
-                if(total_cores[maior_vizinho] == cores[maior_vizinho])
-            }
         }
 
-        if (sem_vizinhos == k) break;
-       
+        if (sem_vizinhos == k) break;      
         
         
         nova_cor = maior_vizinho +1 ;
-        printf("nova cor %d\n", nova_cor);
+        insere_lista(nova_cor,lista_movimentos);
+        //sprintf("nova cor %d\n", nova_cor);
+        
 
 
         for( no n = primeiro_no(g->vertices); n; n = proximo_no(n) ){
@@ -354,27 +353,15 @@ void resolverdor(grafo g){
          
         for (int i = 0; i < k; ++i)
         {
-            
-            printf(" total %d tem : %d nodos\n",i+1,total_cores[i] );
             cores[i] = 0;           
-            total_cores[i] = 0;
-
-            
-            //  if(total_cores[i] == n*m){
-            //     para =1;
-
-            // }
-            // else{
-            //     total_cores[i]=0;
-            // }
-           
+            total_cores[i] = 0;           
         }
         sem_vizinhos=0;
        
 
-        scanf("%s",aux);
-
-        //sleep(1);
+        //scanf("%s",tst);
+        //printa_tabuleiro();
+        
 
         passos++;
     }
@@ -383,7 +370,12 @@ void resolverdor(grafo g){
     printf("%d\n", passos );
 
 
-    
+    for( no n = primeiro_no(lista_movimentos); n; n = proximo_no(n) ){
+            int passo =(int) conteudo(n);
+            printf("%d ", passo);
+
+        }
+        printf("\n");
 
 
 }
@@ -447,15 +439,15 @@ void sentinela_vizinho(vertice v){
 //main
 int main(int argc, char **argv){
 
-    if(argc != 2 ){
-        printf("usage: ./trabalho <arquivo.txt>\n");
-        return -1;
-    }
+    // if(argc != 2 ){
+    //     printf("usage: ./trabalho <arquivo.txt>\n");
+    //     return -1;
+    // }
     srand(time(NULL));
 
-    FILE *fp =  fopen( argv[1], "r" );
+    
 
-    get_parametros(fp);
+    get_parametros();
 
     tabuleiro= malloc(sizeof(int) * n * m);
     cores = malloc (sizeof(int) * k);
@@ -465,12 +457,8 @@ int main(int argc, char **argv){
 
     if( tabuleiro == NULL) return -1;
 
-    get_tabuleiro(fp);
-
-    
-    //printa_tabuleiro();
+    get_tabuleiro();
     g = set_grafo();
-    //printa_grafo(g);
 
     resolverdor(g);
 
